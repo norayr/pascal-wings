@@ -16,6 +16,9 @@ type
   PWMLabel  = Pointer;
   PWMTextField = Pointer;
 
+  // TextView / multi-line widget in WINGs is WMText
+  PWMText = Pointer;
+
   // C callback type: void (*WMAction)(WMWidget *self, void *clientData)
   TWMAction = procedure(self: PWMWidget; clientData: Pointer); cdecl;
 
@@ -33,7 +36,6 @@ procedure WMSetWindowCloseAction(win: PWMWindow; action: TWMAction; clientData: 
 
 procedure WMMoveWidget(w: PWMWidget; x, y: cint); cdecl; external 'WINGs';
 procedure WMResizeWidget(w: PWMWidget; width, height: cuint); cdecl; external 'WINGs';
-
 procedure WMRealizeWidget(w: PWMWidget); cdecl; external 'WINGs';
 procedure WMMapWidget(w: PWMWidget); cdecl; external 'WINGs';
 procedure WMMapSubwidgets(w: PWMWidget); cdecl; external 'WINGs';
@@ -50,12 +52,24 @@ function WMCreateButton(parent: PWMWidget; buttonType: cint): PWMButton; cdecl; 
 procedure WMSetButtonText(b: PWMButton; const text: PChar); cdecl; external 'WINGs';
 procedure WMSetButtonAction(b: PWMButton; action: TWMAction; clientData: Pointer); cdecl; external 'WINGs';
 
-// --- TextField ---
+// --- TextField (single-line edit) ---
 function WMCreateTextField(parent: PWMWidget): PWMTextField; cdecl; external 'WINGs';
 procedure WMSetTextFieldText(t: PWMTextField; const text: PChar); cdecl; external 'WINGs';
 function WMGetTextFieldText(t: PWMTextField): PChar; cdecl; external 'WINGs';
 
-// Free strings returned by some WINGs/WUtil calls
+// --- Text (multi-line "text view") ---
+//function WMCreateText(parent: PWMWidget): PWMText; cdecl; external 'WINGs';
+function WMCreateTextForDocumentType(parent: PWMWidget; parser, writer: Pointer): PWMText; cdecl; external 'WINGs';
+
+procedure WMAppendTextStream(t: PWMText; const text: PChar); cdecl; external 'WINGs';
+procedure WMFreezeText(t: PWMText); cdecl; external 'WINGs';
+procedure WMThawText(t: PWMText); cdecl; external 'WINGs';
+procedure WMSetTextHasVerticalScroller(t: PWMText; shouldHave: cint); cdecl; external 'WINGs';
+procedure WMSetTextHasHorizontalScroller(t: PWMText; shouldHave: cint); cdecl; external 'WINGs';
+procedure WMSetTextEditable(t: PWMText; editable: cint); cdecl; external 'WINGs';
+
+// Free strings returned by some WINGs calls
+// (WMGetTextFieldText returns something you should free)
 procedure wfree(ptr: Pointer); cdecl; external 'WUtil';
 
 implementation
