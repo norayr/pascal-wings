@@ -58,19 +58,50 @@ procedure WMSetTextFieldText(t: PWMTextField; const text: PChar); cdecl; externa
 function WMGetTextFieldText(t: PWMTextField): PChar; cdecl; external 'WINGs';
 
 // --- Text (multi-line "text view") ---
+// WMCreateText does not exist at least here on gentoo, so we use WMCreateTextForDocumentType().
 //function WMCreateText(parent: PWMWidget): PWMText; cdecl; external 'WINGs';
 function WMCreateTextForDocumentType(parent: PWMWidget; parser, writer: Pointer): PWMText; cdecl; external 'WINGs';
 
 procedure WMAppendTextStream(t: PWMText; const text: PChar); cdecl; external 'WINGs';
 procedure WMFreezeText(t: PWMText); cdecl; external 'WINGs';
 procedure WMThawText(t: PWMText); cdecl; external 'WINGs';
+
 procedure WMSetTextHasVerticalScroller(t: PWMText; shouldHave: cint); cdecl; external 'WINGs';
 procedure WMSetTextHasHorizontalScroller(t: PWMText; shouldHave: cint); cdecl; external 'WINGs';
 procedure WMSetTextEditable(t: PWMText; editable: cint); cdecl; external 'WINGs';
+procedure WMSetTextIgnoresNewline(t: PWMText; ignore: cint); cdecl; external 'WINGs';
 
-// Free strings returned by some WINGs calls
-// (WMGetTextFieldText returns something you should free)
+function WMGetTextStream(t: PWMText): PChar; cdecl; external 'WINGs';
+
+// --- Pascal Boolean wrappers ---
+procedure WMSetTextEditableB(t: PWMText; editable: Boolean); inline;
+procedure WMSetTextHasVerticalScrollerB(t: PWMText; onoff: Boolean); inline;
+procedure WMSetTextHasHorizontalScrollerB(t: PWMText; onoff: Boolean); inline;
+procedure WMSetTextIgnoresNewlineB(t: PWMText; onoff: Boolean); inline;
+
+// Free strings returned by some WINGs calls (TextField/Text stream, etc.)
 procedure wfree(ptr: Pointer); cdecl; external 'WUtil';
 
 implementation
+
+procedure WMSetTextEditableB(t: PWMText; editable: Boolean); inline;
+begin
+  WMSetTextEditable(t, Ord(editable));
+end;
+
+procedure WMSetTextHasVerticalScrollerB(t: PWMText; onoff: Boolean); inline;
+begin
+  WMSetTextHasVerticalScroller(t, Ord(onoff));
+end;
+
+procedure WMSetTextHasHorizontalScrollerB(t: PWMText; onoff: Boolean); inline;
+begin
+  WMSetTextHasHorizontalScroller(t, Ord(onoff));
+end;
+
+procedure WMSetTextIgnoresNewlineB(t: PWMText; onoff: Boolean); inline;
+begin
+  WMSetTextIgnoresNewline(t, Ord(onoff));
+end;
+
 end.
