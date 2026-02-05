@@ -1,4 +1,4 @@
-program firstwindow;
+program window0;
 
 {$mode objfpc}{$H+}
 
